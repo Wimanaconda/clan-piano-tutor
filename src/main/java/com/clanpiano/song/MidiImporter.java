@@ -9,14 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.Track;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -50,6 +42,8 @@ public final class MidiImporter
 	private static final double MAX_DROPPED = 0.12;
 	/** Songs are cut to about this many ticks (2.4 minutes); game tracks loop for much longer. */
 	static final int MAX_STEPS = 240;
+	/** Song files bigger than this are not MIDI songs anyone wants to play. */
+	private static final int MAX_FILE_BYTES = 4 * 1024 * 1024;
 	/** How much of the start of the song is used to judge which part is the tune. */
 	private static final double OPENING_BEATS = 96;
 	/** Candidate melodies kept per file, so a wrong first guess can be switched by ear. */
@@ -74,60 +68,56 @@ public final class MidiImporter
 
 	public static Song load(InputStream in, String title, String source) throws IOException
 	{
-		Sequence sequence;
-		try
-		{
-			sequence = MidiSystem.getSequence(in);
-		}
-		catch (InvalidMidiDataException e)
-		{
-			throw new IllegalArgumentException("not a MIDI file we can read (" + e.getMessage() + ")");
-		}
-		return convert(sequence, title, source);
+		return convert(MidiFile.parse(readAll(in)), title, source);
 	}
 
-	static Song convert(Sequence sequence, String title, String source)
+	private static byte[] readAll(InputStream in) throws IOException
 	{
-		double ticksPerBeat = sequence.getDivisionType() == Sequence.PPQ
-			? sequence.getResolution()
-			// SMPTE timing: count half a second as a beat.
-			: sequence.getResolution() * sequence.getDivisionType() / 2.0;
-		if (ticksPerBeat <= 0)
+		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+		byte[] buf = new byte[8192];
+		int n;
+		while ((n = in.read(buf)) > 0)
 		{
-			throw new IllegalArgumentException("MIDI file has no timing information");
+			out.write(buf, 0, n);
+			if (out.size() > MAX_FILE_BYTES)
+			{
+				throw new IllegalArgumentException("MIDI file is too big");
+			}
 		}
+		return out.toByteArray();
+	}
+
+	static Song convert(MidiFile midi, String title, String source)
+	{
+		double ticksPerBeat = midi.ticksPerBeat;
 
 		// Collect notes per part (track + channel).
 		Map<String, List<Note>> parts = new HashMap<>();
 		Map<String, String> partNames = new HashMap<>();
 		Map<String, Integer> programs = new HashMap<>();
-		Track[] tracks = sequence.getTracks();
-		for (int t = 0; t < tracks.length; t++)
+		for (int t = 0; t < midi.tracks.size(); t++)
 		{
 			String trackName = null;
-			for (int i = 0; i < tracks[t].size(); i++)
+			for (MidiFile.Event event : midi.tracks.get(t))
 			{
-				MidiEvent event = tracks[t].get(i);
-				MidiMessage msg = event.getMessage();
-				if (msg instanceof MetaMessage && ((MetaMessage) msg).getType() == 0x03)
+				if (event.metaType == MidiFile.META_TRACK_NAME)
 				{
-					trackName = new String(((MetaMessage) msg).getData()).trim();
+					trackName = event.metaText().trim();
 				}
-				if (!(msg instanceof ShortMessage))
+				if (event.command < 0)
 				{
 					continue;
 				}
-				ShortMessage sm = (ShortMessage) msg;
-				if (sm.getCommand() == ShortMessage.PROGRAM_CHANGE)
+				if (event.command == MidiFile.PROGRAM_CHANGE)
 				{
-					programs.putIfAbsent(t + ":" + sm.getChannel(), sm.getData1());
+					programs.putIfAbsent(t + ":" + event.channel, event.data1);
 				}
-				if (sm.getCommand() != ShortMessage.NOTE_ON || sm.getData2() == 0 || sm.getChannel() == DRUM_CHANNEL)
+				if (event.command != MidiFile.NOTE_ON || event.data2 == 0 || event.channel == DRUM_CHANNEL)
 				{
 					continue;
 				}
-				String key = t + ":" + sm.getChannel();
-				parts.computeIfAbsent(key, k -> new ArrayList<>()).add(new Note(event.getTick(), sm.getData1()));
+				String key = t + ":" + event.channel;
+				parts.computeIfAbsent(key, k -> new ArrayList<>()).add(new Note(event.tick, event.data1));
 				if (trackName != null && !trackName.isEmpty())
 				{
 					partNames.putIfAbsent(key, trackName);
