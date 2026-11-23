@@ -1,0 +1,6 @@
+title: Eine kleine Nachtmusik
+artist: Mozart
+G4*2 - D4 G4*2 - D4 | G4 D4 G4 B4 D5*4
+C5*2 - A4 C5*2 - A4 | C5 A4 F#4 A4 D4*4
+G4*2 - D4 G4*2 - D4 | G4 D4 G4 B4 D5*4
+C5*2 - A4 C5*2 - A4 | C5 A4 F#4 A4 G4*4

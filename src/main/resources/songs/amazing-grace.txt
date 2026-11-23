@@ -1,0 +1,6 @@
+title: Amazing Grace
+artist: Traditional
+G4 | C5*2 E5 C5 | E5*2 D5 | C5*2 A4 | G4*2
+G4 | C5*2 E5 C5 | E5*2 D5 | G5*3 | -*2
+E5 | G5*2 E5 G5 | E5*2 C5 | G4*2 A4 C5 | A4 G4*2
+G4 | C5*2 E5 C5 | E5*2 D5 | C5*3

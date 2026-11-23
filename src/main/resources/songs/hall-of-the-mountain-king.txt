@@ -1,0 +1,7 @@
+title: In the Hall of the Mountain King
+artist: Grieg
+// Transposed from B minor to A minor so it fits the keyboard.
+A4 B4 C5 D5 | E5 C5 E5*2 | D#5 B4 D#5*2 | D5 A#4 D5*2
+A4 B4 C5 D5 | E5 C5 E5 A5 | G5 E5 C5 E5 | G5*4
+A4 B4 C5 D5 | E5 C5 E5*2 | D#5 B4 D#5*2 | D5 A#4 D5*2
+A4 B4 C5 D5 | E5 C5 E5 A5 | G5 E5 C5 E5 | G5*4

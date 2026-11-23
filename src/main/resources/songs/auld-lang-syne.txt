@@ -1,0 +1,7 @@
+title: Auld Lang Syne
+artist: Scottish folk song
+C4 | F4*3 F4 F4*2 A4*2 | G4*3 F4 G4*2 A4*2 | F4*3 F4 A4*2 C5*2 | D5*6 D5*2
+C5*3 A4 A4*2 F4*2 | G4*3 F4 G4*2 A4*2 | F4*3 D4 D4*2 C4*2 | F4*6 D5*2
+// For auld lang syne, my dear
+C5*3 A4 A4*2 F4*2 | G4*3 F4 G4*2 D5*2 | C5*3 A4 A4*2 C5*2 | D5*6 D5*2
+C5*3 A4 A4*2 F4*2 | G4*3 F4 G4*2 A4*2 | F4*3 D4 D4*2 C4*2 | F4*6

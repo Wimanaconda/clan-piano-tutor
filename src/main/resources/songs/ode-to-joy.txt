@@ -1,0 +1,6 @@
+title: Ode to Joy
+artist: Beethoven
+E5 E5 F5 G5 | G5 F5 E5 D5 | C5 C5 D5 E5 | E5 D5 D5*2
+E5 E5 F5 G5 | G5 F5 E5 D5 | C5 C5 D5 E5 | D5 C5 C5*2
+D5 D5 E5 C5 | D5 E5 F5 E5 C5 | D5 E5 F5 E5 D5 | C5 D5 G4*2
+E5 E5 F5 G5 | G5 F5 E5 D5 | C5 C5 D5 E5 | D5 C5 C5*2

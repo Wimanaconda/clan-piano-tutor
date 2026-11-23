@@ -1,0 +1,35 @@
+// Built-in songs, in the order the song selector shows them.
+// A line in [brackets] starts a folder.
+
+[Classical]
+fur-elise.txt
+ode-to-joy.txt
+canon-in-d.txt
+rondo-alla-turca.txt
+spring.txt
+morning-mood.txt
+eine-kleine-nachtmusik.txt
+hall-of-the-mountain-king.txt
+the-entertainer.txt
+
+[Folk & Shanties]
+korobeiniki.txt
+drunken-sailor.txt
+bella-ciao.txt
+scarborough-fair.txt
+greensleeves.txt
+amazing-grace.txt
+when-the-saints.txt
+
+[Holidays & Parties]
+happy-birthday.txt
+jingle-bells.txt
+carol-of-the-bells.txt
+auld-lang-syne.txt
+
+[Nursery Rhymes]
+twinkle-twinkle.txt
+mary-had-a-little-lamb.txt
+frere-jacques.txt
+row-row-row-your-boat.txt
+brahms-lullaby.txt

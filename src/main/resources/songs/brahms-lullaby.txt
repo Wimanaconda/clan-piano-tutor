@@ -1,0 +1,6 @@
+title: Lullaby (Wiegenlied)
+artist: Brahms
+E4 E4 | G4*3 E4 E4 | G4*3 E4 G4 | C5*2 B4*2 A4*2 | A4 G4*2
+D4 E4 | F4*2 D4 D4 E4 | F4*3 D4 F4 | B4 A4 G4*2 B4 | C5*3
+C4 C4 | C5*3 A4 F4 | G4*3 E4 C4 | F4 G4 A4 | G4*3
+C4 C4 | C5*3 A4 F4 | G4*3 E4 C4 | F4 E4 D4 | C4*3

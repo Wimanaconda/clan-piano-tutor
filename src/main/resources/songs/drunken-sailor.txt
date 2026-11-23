@@ -1,0 +1,11 @@
+title: Drunken Sailor
+artist: Sea shanty
+A4*2 A4 A4 A4*2 A4 A4 A4*2 D4*2 F4*2 A4*2
+G4*2 G4 G4 G4*2 G4 G4 G4*2 C4*2 E4*2 G4*2
+A4*2 A4 A4 A4*2 A4 A4 A4*2 B4*2 C5*2 D5*2
+C5*2 A4*2 G4*2 E4*2 D4*4 D4*4
+// Chorus: way hay and up she rises
+A4*4 A4*4 A4*2 D4*2 F4*2 A4*2
+G4*4 G4*4 G4*2 C4*2 E4*2 G4*2
+A4*4 A4*4 A4*2 B4*2 C5*2 D5*2
+C5*2 A4*2 G4*2 E4*2 D4*4 D4*4

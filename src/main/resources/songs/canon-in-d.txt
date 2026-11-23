@@ -1,0 +1,6 @@
+title: Canon in D
+artist: Pachelbel
+F#5*2 E5*2 D5*2 C#5*2 | B4*2 A4*2 B4*2 C#5*2
+D5*2 C#5*2 B4*2 A4*2 | G4*2 F#4*2 G4*2 E4*2
+F#5*2 E5*2 D5*2 C#5*2 | B4*2 A4*2 B4*2 C#5*2
+D5*2 C#5*2 B4*2 A4*2 | G4*2 F#4*2 G4*2 A4*4 D4*4

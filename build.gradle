@@ -1,0 +1,52 @@
+plugins {
+	id 'java'
+}
+
+repositories {
+	mavenLocal()
+	maven {
+		url = 'https://repo.runelite.net'
+		content {
+			includeGroupByRegex("net\\.runelite.*")
+		}
+	}
+	mavenCentral()
+}
+
+def runeLiteVersion = 'latest.release'
+
+dependencies {
+	compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
+
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+	testImplementation 'junit:junit:4.13.2'
+	testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion
+	testImplementation group: 'net.runelite', name: 'jshell', version: runeLiteVersion
+}
+
+group = 'com.clanpiano'
+version = '1.0.0'
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+	options.release.set(11)
+}
+
+// Dev tool: shows how each MIDI in the RuneScape song folder is turned into a piano song.
+tasks.register('midiReport', JavaExec) {
+	group = 'application'
+	classpath = sourceSets.test.runtimeClasspath
+	mainClass = 'com.clanpiano.song.MidiReport'
+	args System.getProperty('user.home') + '/.runelite/clan-piano-songs/RuneScape'
+}
+
+// Launches a dev RuneLite client with this plugin loaded: ./gradlew run
+tasks.register('run', JavaExec) {
+	group = 'application'
+	classpath = sourceSets.test.runtimeClasspath
+	mainClass = 'com.clanpiano.ClanPianoPluginTest'
+	jvmArgs '-ea'
+	args '--developer-mode', '--debug'
+}

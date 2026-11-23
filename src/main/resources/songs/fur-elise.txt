@@ -1,0 +1,5 @@
+title: Fur Elise
+artist: Beethoven
+// One tick per sixteenth note: the famous opening, played twice.
+E5 D#5 E5 D#5 E5 B4 D5 C5 | A4*2 C4 E4 A4 | B4*2 E4 G#4 B4 | C5*2 E4
+E5 D#5 E5 D#5 E5 B4 D5 C5 | A4*2 C4 E4 A4 | B4*2 E4 C5 B4 | A4*4

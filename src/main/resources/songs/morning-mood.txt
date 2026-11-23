@@ -1,0 +1,6 @@
+title: Morning Mood
+artist: Grieg
+G5*2 E5 D5 C5 D5 E5*2 | G5*2 E5 D5 C5 D5 E5*2
+G5 E5 G5 A5*2 E5 A5 G5*2 E5 D5 C5*4
+G5*2 E5 D5 C5 D5 E5*2 | G5*2 E5 D5 C5 D5 E5*2
+D5 E5 G5*2 E5 G5 A5*2 E5 A5 G5*2 E5 D5 C5*4

@@ -1,0 +1,6 @@
+title: Jingle Bells
+artist: James Lord Pierpont
+E5 E5 E5*2 | E5 E5 E5*2 | E5 G5 C5 D5 | E5*4
+F5 F5 F5 F5 | F5 E5 E5 E5 E5 | E5 D5 D5 E5 | D5*2 G5*2
+E5 E5 E5*2 | E5 E5 E5*2 | E5 G5 C5 D5 | E5*4
+F5 F5 F5 F5 | F5 E5 E5 E5 E5 | G5 G5 F5 D5 | C5*4
