@@ -15,6 +15,8 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -38,13 +40,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
-import net.runelite.client.util.LinkBrowser;
 
 /**
  * Side panel: a song selector with folders, search and favourites, and a "now playing"
@@ -234,8 +236,8 @@ class ClanPianoPanel extends PluginPanel
 
 		JButton reload = smallButton("Reload", "Load songs again after adding or editing files");
 		reload.addActionListener(e -> plugin.reloadSongs());
-		JButton folder = smallButton("Open song folder", "Add your own .txt songs here; each subfolder becomes a folder in the list");
-		folder.addActionListener(e -> openFolder(null));
+		JButton folder = smallButton("Copy folder path", "Copies the path of your song folder. Add your own .txt or .mid songs there; each subfolder becomes a folder in the list");
+		folder.addActionListener(e -> copyFolderPath(null, folder));
 		JPanel extras = new JPanel(new GridLayout(1, 2, 4, 0));
 		extras.setOpaque(false);
 		extras.add(reload);
@@ -478,7 +480,11 @@ class ClanPianoPanel extends PluginPanel
 			+ "<font color='#b4b4b4'> · " + song.noteCount() + " notes · " + song.duration() + range + "</font></html>");
 	}
 
-	private void openFolder(String folder)
+	/**
+	 * Copies a song folder's path to the clipboard, to paste into File Explorer. Plugins may not
+	 * open folders themselves. The button (if any) says "Copied" for a moment.
+	 */
+	private void copyFolderPath(String folder, JButton button)
 	{
 		Path dir = plugin.getLibrary().pathOf(folder);
 		if (dir == null)
@@ -488,11 +494,28 @@ class ClanPianoPanel extends PluginPanel
 		try
 		{
 			Files.createDirectories(dir);
-			LinkBrowser.open(dir.toString());
 		}
 		catch (IOException ex)
 		{
-			errors.setText("<html>Song folder: " + escape(dir.toString()) + "</html>");
+			// Still worth copying: the path is what the player needs.
+		}
+		String path = dir.toAbsolutePath().toString();
+		try
+		{
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(path), null);
+		}
+		catch (IllegalStateException ex)
+		{
+			// Clipboard busy: the path is still shown below.
+		}
+		errors.setText("<html>Song folder (copied): " + escape(path) + "</html>");
+		if (button != null)
+		{
+			String text = button.getText();
+			button.setText("Copied!");
+			Timer timer = new Timer(1500, e -> button.setText(text));
+			timer.setRepeats(false);
+			timer.start();
 		}
 	}
 
@@ -691,7 +714,7 @@ class ClanPianoPanel extends PluginPanel
 	{
 		EmptyFolderRow(String folder)
 		{
-			super("<html>Empty. Click to open this folder, add .txt songs, then Reload.</html>");
+			super("<html>Empty. Click to copy this folder's path, add .txt songs there, then Reload.</html>");
 			setFont(FontManager.getRunescapeSmallFont());
 			setForeground(MUTED);
 			setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 6));
@@ -702,7 +725,7 @@ class ClanPianoPanel extends PluginPanel
 				@Override
 				public void mouseClicked(MouseEvent e)
 				{
-					openFolder(folder);
+					copyFolderPath(folder, null);
 				}
 			});
 		}

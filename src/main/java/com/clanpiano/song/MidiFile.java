@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * A minimal reader for Standard MIDI Files (.mid): just enough to get the notes, program changes
- * and track names of each track. Plugins may not use javax.sound, so the file is parsed here.
+ * and track names of each track. Plugins may not use the Java sound API, so the file is parsed here.
  */
 final class MidiFile
 {

@@ -19,7 +19,7 @@ press.
 - **Song selector.** Folders, search, favourites (star), difficulty, length and key range, and a
   small preview of the melody.
 - **Your own songs.** Drop `.txt` songs or `.mid` / `.midi` files in your song folder (the panel's
-  *Open song folder* button opens it). Each subfolder becomes a folder in the selector. For a MIDI
+  *Copy folder path* button copies its path, to paste into File Explorer). Each subfolder becomes a folder in the selector. For a MIDI
   file the plugin picks the part that looks most like the tune and fits it to the piano. If it
   picked the wrong part, choose another one in the card's *Melody* box.
 - **Keyboard too.** Presses on your keyboard count when they match the letter printed on the key
