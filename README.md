@@ -46,7 +46,7 @@ All public domain:
 
 ## Writing a song
 
-Put a `.txt` file in `%USERPROFILE%\.runelite\clan-piano-songs` (or a subfolder) and press
+Put a `.txt` file in `%USERPROFILE%\.runelite\plugin-data\clan-piano-tutor` (or a subfolder) and press
 *Reload*. Songs that fail to load show the line and the reason in the panel.
 
 ```

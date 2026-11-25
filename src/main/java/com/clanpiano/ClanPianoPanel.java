@@ -20,8 +20,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,6 +45,7 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
+import net.runelite.client.util.Filepath;
 
 /**
  * Side panel: a song selector with folders, search and favourites, and a "now playing"
@@ -486,20 +485,20 @@ class ClanPianoPanel extends PluginPanel
 	 */
 	private void copyFolderPath(String folder, JButton button)
 	{
-		Path dir = plugin.getLibrary().pathOf(folder);
+		Filepath dir = plugin.getLibrary().pathOf(folder);
 		if (dir == null)
 		{
 			return;
 		}
 		try
 		{
-			Files.createDirectories(dir);
+			dir.createDirectories();
 		}
 		catch (IOException ex)
 		{
 			// Still worth copying: the path is what the player needs.
 		}
-		String path = dir.toAbsolutePath().toString();
+		String path = dir.toString();
 		try
 		{
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(path), null);

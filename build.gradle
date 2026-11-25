@@ -39,7 +39,7 @@ tasks.register('midiReport', JavaExec) {
 	group = 'application'
 	classpath = sourceSets.test.runtimeClasspath
 	mainClass = 'com.clanpiano.song.MidiReport'
-	args System.getProperty('user.home') + '/.runelite/clan-piano-songs/RuneScape'
+	args System.getProperty('user.home') + '/.runelite/plugin-data/clan-piano-tutor/RuneScape'
 }
 
 // Launches a dev RuneLite client with this plugin loaded: ./gradlew run

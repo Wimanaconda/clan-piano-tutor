@@ -102,13 +102,13 @@ public class SongParserTest
 		java.nio.file.Files.write(dir.resolve("Clan").resolve("anthem.txt"), "title: Anthem\nC4 D4 E4".getBytes());
 		java.nio.file.Files.write(dir.resolve("loose.txt"), "C4 E4 G4".getBytes());
 
-		SongLibrary library = new SongLibrary(dir);
+		SongLibrary library = new SongLibrary(net.runelite.client.util.Filepath.Unchecked.getRooted(dir));
 		library.reload();
 		List<String> folders = library.getFolders();
 		assertEquals(java.util.Arrays.asList(SongLibrary.MY_SONGS, "Clan", "RuneScape"),
 			folders.subList(folders.size() - 3, folders.size()));
 		assertTrue(library.getCustomFolders().contains("RuneScape"));
-		assertEquals(dir.resolve("RuneScape"), library.pathOf("RuneScape"));
+		assertEquals(dir.resolve("RuneScape").toString(), library.pathOf("RuneScape").toString());
 		Song anthem = library.getSongs().stream().filter(x -> x.getTitle().equals("Anthem")).findFirst().get();
 		assertEquals("Clan", anthem.getFolder());
 		assertEquals("Clan/Anthem", anthem.id());

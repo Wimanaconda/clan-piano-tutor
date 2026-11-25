@@ -117,7 +117,7 @@ public class MidiImporterTest
 		Files.createDirectories(dir.resolve("RuneScape"));
 		MidiSystem.write(seq, 1, dir.resolve("RuneScape").resolve("Scale Tune.mid").toFile());
 
-		SongLibrary library = new SongLibrary(dir);
+		SongLibrary library = new SongLibrary(net.runelite.client.util.Filepath.Unchecked.getRooted(dir));
 		library.reload();
 		assertEquals("errors: " + library.getErrors(), 0, library.getErrors().size());
 		Song song = library.getSongs().stream().filter(s -> s.getTitle().equals("Scale Tune")).findFirst().get();

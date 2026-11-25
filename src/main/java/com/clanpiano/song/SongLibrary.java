@@ -5,24 +5,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.util.Filepath;
 
 /**
  * Built-in songs live in resources under /songs, listed in /songs/index.txt, where a line
  * like {@code [Classical]} starts a folder. Players can add their own .txt songs to a folder
  * in the RuneLite directory: loose files go under "My songs", and each subfolder becomes a
- * folder of its own in the song selector. Song files are .txt in the note format, or MIDI
+ * folder of its own in the song selector. Files are read through RuneLite's {@link Filepath},
+ * which keeps the plugin inside its own data folder. Song files are .txt in the note format, or MIDI
  * (.mid/.midi), which {@link MidiImporter} turns into a playable melody.
  */
 @Slf4j
@@ -33,7 +34,7 @@ public final class SongLibrary
 	public static final String MY_SONGS = "My songs";
 
 	@Getter
-	private final Path customDir;
+	private final Filepath customDir;
 	@Getter
 	private List<Song> songs = Collections.emptyList();
 	/** Folder names in display order, including custom folders that are still empty. */
@@ -45,7 +46,7 @@ public final class SongLibrary
 	@Getter
 	private List<String> errors = Collections.emptyList();
 
-	public SongLibrary(Path customDir)
+	public SongLibrary(Filepath customDir)
 	{
 		this.customDir = customDir;
 	}
@@ -86,7 +87,7 @@ public final class SongLibrary
 		{
 			try
 			{
-				Files.createDirectories(customDir);
+				customDir.createDirectories();
 				List<Song> mine = loadDir(customDir, MY_SONGS, problems);
 				if (!mine.isEmpty())
 				{
@@ -94,15 +95,12 @@ public final class SongLibrary
 					folderOrder.add(MY_SONGS);
 					custom.add(MY_SONGS);
 				}
-				List<Path> subdirs = new ArrayList<>();
-				try (DirectoryStream<Path> dirs = Files.newDirectoryStream(customDir, Files::isDirectory))
+				List<Filepath> subdirs = children(customDir);
+				subdirs.removeIf(p -> !p.isDirectory());
+				subdirs.sort(Comparator.comparing(Filepath::getFileName, String.CASE_INSENSITIVE_ORDER));
+				for (Filepath dir : subdirs)
 				{
-					dirs.forEach(subdirs::add);
-				}
-				subdirs.sort(Comparator.comparing(p -> p.getFileName().toString(), String.CASE_INSENSITIVE_ORDER));
-				for (Path dir : subdirs)
-				{
-					String name = dir.getFileName().toString();
+					String name = dir.getFileName();
 					loaded.addAll(loadDir(dir, name, problems));
 					folderOrder.add(name);
 					custom.add(name);
@@ -122,44 +120,58 @@ public final class SongLibrary
 	}
 
 	/** Where a folder lives on disk, for custom folders. */
-	public Path pathOf(String folder)
+	public Filepath pathOf(String folder)
 	{
 		if (customDir == null || folder == null || !customFolders.contains(folder) || MY_SONGS.equals(folder))
 		{
 			return customDir;
 		}
-		return customDir.resolve(folder);
+		return customDir.joinSegment(folder);
 	}
 
-	private static List<Song> loadDir(Path dir, String folder, List<String> problems) throws IOException
+	/** The files and folders directly inside {@code dir}. */
+	private static List<Filepath> children(Filepath dir) throws IOException
+	{
+		try (Stream<Filepath> walk = dir.walk(1))
+		{
+			return walk.filter(p -> !p.equals(dir)).collect(Collectors.toCollection(ArrayList::new));
+		}
+	}
+
+	private static List<Song> loadDir(Filepath dir, String folder, List<String> problems) throws IOException
 	{
 		List<Song> out = new ArrayList<>();
-		try (DirectoryStream<Path> files = Files.newDirectoryStream(dir, "*.{txt,TXT,mid,MID,midi,MIDI}"))
+		for (Filepath path : children(dir))
 		{
-			for (Path path : files)
+			String name = path.getFileName();
+			String lower = name.toLowerCase(Locale.ROOT);
+			boolean text = lower.endsWith(".txt");
+			if (!path.isFile() || !(text || lower.endsWith(".mid") || lower.endsWith(".midi")))
 			{
-				String name = path.getFileName().toString();
-				try
+				continue;
+			}
+			try
+			{
+				Song song;
+				if (text)
 				{
-					Song song;
-					if (name.toLowerCase(java.util.Locale.ROOT).endsWith(".txt"))
+					try (BufferedReader reader = path.openBufferedReader())
 					{
-						String text = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-						song = SongParser.parse(text, stripExtension(name), name);
+						song = SongParser.parse(reader.lines().collect(Collectors.joining("\n")), stripExtension(name), name);
 					}
-					else
-					{
-						try (InputStream in = new java.io.BufferedInputStream(Files.newInputStream(path)))
-						{
-							song = MidiImporter.load(in, stripExtension(name), name);
-						}
-					}
-					out.add(song.inFolder(folder));
 				}
-				catch (IOException | RuntimeException e)
+				else
 				{
-					problems.add((MY_SONGS.equals(folder) ? "" : folder + "/") + name + ": " + e.getMessage());
+					try (InputStream in = new java.io.BufferedInputStream(path.openInputStream()))
+					{
+						song = MidiImporter.load(in, stripExtension(name), name);
+					}
 				}
+				out.add(song.inFolder(folder));
+			}
+			catch (IOException | RuntimeException e)
+			{
+				problems.add((MY_SONGS.equals(folder) ? "" : folder + "/") + name + ": " + e.getMessage());
 			}
 		}
 		out.sort(Comparator.comparing(Song::getTitle, String.CASE_INSENSITIVE_ORDER));

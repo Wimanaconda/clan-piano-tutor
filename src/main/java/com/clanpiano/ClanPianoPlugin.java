@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -26,7 +27,6 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
@@ -38,13 +38,17 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.Filepath;
 import net.runelite.client.util.Text;
 
 @Slf4j
 @PluginDescriptor(
 	name = "Clan Piano Tutor",
 	description = "Highlights the next key to play on the Clan Hall piano, with a songbook of famous tunes",
-	tags = {"piano", "clan", "hall", "music", "song", "notes"}
+	tags = {"piano", "clan", "hall", "music", "song", "notes"},
+	internalName = "clan-piano-tutor",
+	// Songs used to live in .runelite/clan-piano-songs; RuneLite moves them to plugin-data.
+	legacyDataDirectory = "clan-piano-songs"
 )
 public class ClanPianoPlugin extends Plugin
 {
@@ -87,8 +91,9 @@ public class ClanPianoPlugin extends Plugin
 	@Getter
 	private final SongPlayer player = new SongPlayer();
 
+	/** Built-in songs plus the player's own, from .runelite/plugin-data/clan-piano-tutor. */
 	@Getter
-	private final SongLibrary library = new SongLibrary(RuneLite.RUNELITE_DIR.toPath().resolve("clan-piano-songs"));
+	private SongLibrary library = new SongLibrary(null);
 
 	@Getter
 	private PianoKey wrongKey;
@@ -137,9 +142,24 @@ public class ClanPianoPlugin extends Plugin
 		return configManager.getConfig(ClanPianoConfig.class);
 	}
 
+	/** The player's song folder, or null (built-in songs only) if RuneLite can't provide one. */
+	private Filepath songFolder()
+	{
+		try
+		{
+			return getPluginDirectory();
+		}
+		catch (IOException | RuntimeException e)
+		{
+			log.warn("No song folder: only the built-in songs are available", e);
+			return null;
+		}
+	}
+
 	@Override
 	protected void startUp()
 	{
+		library = new SongLibrary(songFolder());
 		library.reload();
 		favourites.clear();
 		String favs = configManager.getConfiguration(ClanPianoConfig.GROUP, FAVOURITES_KEY);
